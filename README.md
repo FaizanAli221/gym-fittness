@@ -612,13 +612,11 @@ This project is open source and available under the MIT License.
 
 ## 👨‍💻 Author
 
-**Uzair Khan**  
-Full-Stack Developer | AI/ML Engineer  
-
-- **GitHub**: [@Uzairkahn](https://github.com/Uzairkahn)
-- **Email**: uzairkhan4645632@gmail.com
-- **LinkedIn**: [uzair-khan-616048385](https://www.linkedin.com/in/uzair-khan-616048385/)
-- **Fiverr**: [uzairpathan12](https://www.fiverr.com/sellers/uzairpathan12/)
+**Faizan Ali**  
+Full-Stack Developer 
+- **Email**: Fa577207@gmail.com
+- **LinkedIn**:(www.linkedin.com/in/faizan-ali-722816389)
+  
 
 ---
 
