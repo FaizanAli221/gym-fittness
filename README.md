@@ -2,11 +2,35 @@
 
 **A comprehensive gym equipment and service management platform**
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/FaizanAli221/gym-fittness)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/FaizanAli221/gym-fittness)
 ![GitHub](https://img.shields.io/badge/Language-JavaScript-yellow)
 ![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-green)
 ![Frontend](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-blue)
 ![Database](https://img.shields.io/badge/Database-MySQL-orange)
 ![Status](https://img.shields.io/badge/Status-Fully%20Functional-brightgreen)
+
+---
+
+## ⚡ Quick Run (Localhost)
+
+Run the entire application (Frontend + Backend) with just 2 commands:
+
+```bash
+# 1. Clone & enter repository
+git clone https://github.com/FaizanAli221/gym-fittness.git
+cd gym-fittness
+
+# 2. Install dependencies & start
+npm install
+npm start
+```
+
+👉 Open in your browser: **[http://localhost:3000](http://localhost:3000)**
+
+*(Windows users can also simply double-click **`start.bat`** to run instantly!)*
+
+---
 
 ## 📸 Project Overview
 
