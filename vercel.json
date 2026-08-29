@@ -28,6 +28,10 @@
     {
       "source": "/index.html",
       "destination": "/gym-project/index.html"
+    },
+    {
+      "source": "/((?!api|gym-project).*)",
+      "destination": "/gym-project/$1"
     }
   ]
 }
