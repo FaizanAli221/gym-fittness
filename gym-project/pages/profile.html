@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile — GymForge</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <div id="gf-navbar"></div>
+
+  <div class="dashboard-layout">
+
+    <aside class="sidebar" id="gf-sidebar"></aside>
+
+    <main class="dashboard-content">
+
+      <h2 class="fw-display mb-1">MY <span class="text-primary-gf">PROFILE</span></h2>
+      <p class="text-muted-gf fw-condensed mb-4" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;">View and update your personal information</p>
+
+      <div class="row g-4">
+
+        <!-- Profile Card -->
+        <div class="col-lg-4">
+          <div class="gf-card text-center">
+            <div class="gf-card-body">
+              <div id="profile-avatar" style="width:90px;height:90px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:2rem;color:var(--dark);margin:0 auto 1rem;"></div>
+              <h4 class="fw-condensed" id="p-fullname" style="letter-spacing:1px;margin-bottom:0.25rem;"></h4>
+              <div class="text-muted-gf fw-condensed" style="font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;" id="p-email"></div>
+              <hr class="gf-divider"/>
+              <div class="text-start">
+                <div style="padding:0.5rem 0;border-bottom:1px solid var(--border);">
+                  <div class="gf-label" style="margin-bottom:0.2rem;">Gym / Business</div>
+                  <div class="fw-condensed" id="p-gym" style="font-size:0.95rem;"></div>
+                </div>
+                <div style="padding:0.5rem 0;border-bottom:1px solid var(--border);">
+                  <div class="gf-label" style="margin-bottom:0.2rem;">City</div>
+                  <div class="fw-condensed" id="p-city" style="font-size:0.95rem;"></div>
+                </div>
+                <div style="padding:0.5rem 0;">
+                  <div class="gf-label" style="margin-bottom:0.2rem;">Phone</div>
+                  <div class="fw-condensed" id="p-phone" style="font-size:0.95rem;"></div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <span class="gf-badge gf-badge-success">Active Member</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats mini -->
+          <div class="gf-card mt-3">
+            <div class="gf-card-body">
+              <h6 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.78rem;color:var(--text-muted);">Account Summary</h6>
+              <div id="mini-stats"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="col-lg-8">
+          <div class="gf-card">
+            <div class="gf-card-body">
+              <h5 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.82rem;color:var(--text-muted);">Edit Information</h5>
+
+              <div class="gf-alert gf-alert-success" id="profile-success"></div>
+              <div class="gf-alert gf-alert-danger" id="profile-error"></div>
+
+              <form id="profile-form" novalidate>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="edit-name">Full Name *</label>
+                      <input type="text" id="edit-name" class="gf-input"/>
+                      <div class="gf-error" id="name-err">Name must be at least 3 characters.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="edit-email">Email Address *</label>
+                      <input type="email" id="edit-email" class="gf-input"/>
+                      <div class="gf-error" id="email-err">Please enter a valid email address.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="edit-phone">Phone Number *</label>
+                      <input type="tel" id="edit-phone" class="gf-input"/>
+                      <div class="gf-error" id="phone-err">Enter a valid phone number.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="edit-gym">Gym / Business Name *</label>
+                      <input type="text" id="edit-gym" class="gf-input"/>
+                      <div class="gf-error" id="gym-err">Gym name is required.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="edit-city">City *</label>
+                      <select id="edit-city" class="gf-input">
+                        <option value="">— Select City —</option>
+                        <option>Muscat</option>
+                        <option>Salalah</option>
+                        <option>Sohar</option>
+                        <option>Nizwa</option>
+                        <option>Sur</option>
+                        <option>Other</option>
+                      </select>
+                      <div class="gf-error" id="city-err">Please select your city.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="gf-divider mt-4"/>
+
+                <h5 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.82rem;color:var(--text-muted);">Change Password (optional)</h5>
+
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="old-pw">Current Password</label>
+                      <input type="password" id="old-pw" class="gf-input" placeholder="Current password"/>
+                      <div class="gf-error" id="old-pw-err">Incorrect current password.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="new-pw">New Password</label>
+                      <input type="password" id="new-pw" class="gf-input" placeholder="At least 8 characters"/>
+                      <div class="gf-error" id="new-pw-err">Password must be at least 8 characters.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="confirm-pw">Confirm New Password</label>
+                      <input type="password" id="confirm-pw" class="gf-input" placeholder="Repeat new password"/>
+                      <div class="gf-error" id="confirm-pw-err">Passwords do not match.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-primary-gf mt-4" id="save-btn">SAVE CHANGES</button>
+                <button type="button" class="btn-outline-gf mt-4 ms-2" id="cancel-btn">CANCEL</button>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="gf-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    $(document).ready(async function () {
+      let user = await GF.loadUser();
+      GF.renderNavbar('profile');
+      GF.renderFooter();
+      if (!GF.requireLogin()) return;
+      GF_renderSidebar('profile');
+
+      function populateProfile() {
+        const initials = user.fullName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+        $('#profile-avatar').text(initials);
+        $('#p-fullname').text(user.fullName);
+        $('#p-email').text(user.email);
+        $('#p-gym').text(user.gymName || '—');
+        $('#p-city').text(user.city || '—');
+        $('#p-phone').text(user.phone || '—');
+        $('#edit-name').val(user.fullName);
+        $('#edit-email').val(user.email);
+        $('#edit-phone').val(user.phone || '');
+        $('#edit-gym').val(user.gymName || '');
+        $('#edit-city').val(user.city || '');
+      }
+
+      async function loadStats() {
+        const [bRes, rRes] = await Promise.all([API.getBookings(), API.getRepairs()]);
+        const bookings = bRes.success ? bRes.bookings : [];
+        const requests = rRes.success ? rRes.requests : [];
+        const stats = [
+          { label: 'Total Bookings',  value: bookings.length },
+          { label: 'Active Bookings', value: bookings.filter(b=>b.status==='Confirmed').length },
+          { label: 'Repair Requests', value: requests.length },
+        ];
+        let statsHtml = '';
+        stats.forEach(s => {
+          statsHtml += `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+            <span style="font-family:var(--font-condensed);font-size:0.85rem;color:var(--text-muted);">${s.label}</span>
+            <span style="font-family:var(--font-display);font-size:1.1rem;color:var(--primary);">${s.value}</span>
+          </div>`;
+        });
+        $('#mini-stats').html(statsHtml);
+      }
+
+      populateProfile();
+      await loadStats();
+
+      /* Validation */
+      $('#edit-name').on('blur',  function(){ if(!GF.validate.minLen($(this).val(),3)) GF.showError(this,'Name must be at least 3 characters.'); else GF.clearError(this); });
+      $('#edit-email').on('blur', function(){ if(!GF.validate.email($(this).val()))   GF.showError(this,'Please enter a valid email address.'); else GF.clearError(this); });
+      $('#edit-phone').on('blur', function(){ if(!GF.validate.phone($(this).val()))   GF.showError(this,'Enter a valid phone number.'); else GF.clearError(this); });
+      $('#edit-gym').on('blur',   function(){ if(!GF.validate.required($(this).val())) GF.showError(this,'Gym name is required.'); else GF.clearError(this); });
+
+      /* Save profile */
+      $('#profile-form').on('submit', async function (e) {
+        e.preventDefault();
+        GF.clearAll(this);
+        $('#profile-error, #profile-success').removeClass('show');
+
+        const fullName = $('#edit-name').val();
+        const email    = $('#edit-email').val();
+        const phone    = $('#edit-phone').val();
+        const gymName  = $('#edit-gym').val();
+        const city     = $('#edit-city').val();
+        let valid = true;
+
+        if (!GF.validate.minLen(fullName,3)) { GF.showError(document.getElementById('edit-name'),  'Name must be at least 3 characters.'); valid=false; }
+        if (!GF.validate.email(email))       { GF.showError(document.getElementById('edit-email'), 'Please enter a valid email address.'); valid=false; }
+        if (!GF.validate.phone(phone))       { GF.showError(document.getElementById('edit-phone'), 'Enter a valid phone number.'); valid=false; }
+        if (!GF.validate.required(gymName))  { GF.showError(document.getElementById('edit-gym'),   'Gym name is required.'); valid=false; }
+        if (!valid) { $('#profile-error').text('Please fix the errors above.').addClass('show'); return; }
+
+        /* Profile update — currently just updates local display (no dedicated update endpoint needed for project scope) */
+        user = { ...user, fullName, email, phone, gymName, city };
+        GF.setUser(user);
+        populateProfile();
+        $('#profile-success').text('Profile updated successfully!').addClass('show');
+        GF.toast('Profile saved!', 'success');
+      });
+    });
+  </script>
+</body>
+</html>

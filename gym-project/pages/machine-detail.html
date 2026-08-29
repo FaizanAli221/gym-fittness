@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Machine Details — GymForge</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <div id="gf-navbar"></div>
+
+  <!-- Breadcrumb -->
+  <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:0.75rem 0;">
+    <div class="container">
+      <nav style="font-family:var(--font-condensed);font-size:0.82rem;letter-spacing:1px;color:var(--text-muted);">
+        <a href="../index.html" style="color:var(--text-muted);">HOME</a>
+        <span style="margin:0 0.5rem;">/</span>
+        <a href="machines.html" style="color:var(--text-muted);">MACHINES</a>
+        <span style="margin:0 0.5rem;">/</span>
+        <span id="breadcrumb-name" style="color:var(--primary);">—</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="page-wrapper">
+    <div class="container">
+
+      <!-- Machine not found -->
+      <div id="not-found" style="display:none;text-align:center;padding:4rem 0;">
+        <div style="font-size:3rem;margin-bottom:1rem;"><i class="fa-solid fa-xmark" style="color:var(--danger);"></i></div>
+        <h3 class="fw-condensed" style="letter-spacing:1px;">MACHINE NOT FOUND</h3>
+        <a href="machines.html" class="btn-primary-gf mt-3">← Back to Catalog</a>
+      </div>
+
+      <div id="machine-content" style="display:none;">
+        <div class="row g-5">
+
+          <!-- Image / Icon Panel -->
+          <div class="col-lg-5">
+            <div class="detail-img" id="machine-icon" style="border-radius:var(--radius-lg);border:1px solid var(--border);font-size:6rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);height:380px;"></div>
+
+            <!-- Specs -->
+            <div class="gf-card mt-4">
+              <div class="gf-card-body">
+                <h5 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.85rem;color:var(--text-muted);">Specifications</h5>
+                <div id="machine-specs"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Panel -->
+          <div class="col-lg-7">
+            <span id="machine-category" class="gf-badge gf-badge-muted mb-3"></span>
+            <h1 class="fw-display" id="machine-name" style="font-size:2.5rem;margin-bottom:0.5rem;"></h1>
+
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span id="machine-rating" style="color:#f59e0b;font-family:var(--font-condensed);font-size:1.1rem;"></span>
+              <span id="machine-reviews" style="color:var(--text-muted);font-size:0.85rem;"></span>
+              <span id="machine-status" class="gf-badge"></span>
+            </div>
+
+            <p id="machine-desc" style="color:var(--text-muted);line-height:1.75;margin-bottom:2rem;font-size:0.95rem;"></p>
+
+            <!-- Price & CTA -->
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:2rem;">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  <div style="font-family:var(--font-condensed);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.25rem;">Price</div>
+                  <div class="price-tag" id="machine-price"></div>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                  <button class="btn-primary-gf" id="btn-book-service"><i class="fa-solid fa-calendar"></i> Book Installation</button>
+                  <button class="btn-outline-gf" id="btn-repair"><i class="fa-solid fa-wrench"></i> Request Repair</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Brand info -->
+            <div style="color:var(--text-muted);font-size:0.88rem;font-family:var(--font-condensed);letter-spacing:0.5px;">
+              <span style="color:var(--text-muted);">BRAND: </span>
+              <span id="machine-brand" style="color:var(--primary);"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Related Machines -->
+        <div class="mt-5 pt-3">
+          <hr class="gf-divider"/>
+          <h4 class="fw-display mb-4">SIMILAR <span class="text-primary-gf">MACHINES</span></h4>
+          <div class="row g-3" id="related-machines"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="gf-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    $(document).ready(async function () {
+      await GF.loadUser();
+      GF.renderNavbar('machines');
+      GF.renderFooter();
+
+      const params = new URLSearchParams(window.location.search);
+      const id = parseInt(params.get('id'));
+      const machine = GF_DATA.machines.find(m => m.id === id);
+
+      if (!machine) { $('#not-found').show(); return; }
+
+      $('#machine-content').show();
+      document.title = machine.name + ' — GymForge';
+      $('#breadcrumb-name').text(machine.name);
+
+      if (machine.image) {
+        $('#machine-icon').html(`<img src="../${machine.image}" alt="${machine.name}" style="width:100%;height:100%;object-fit:cover;">`);
+      } else {
+        $('#machine-icon').html(`<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;"><i class="fa-solid ${machine.icon}"></i></div>`);
+      }
+      $('#machine-name').text(machine.name);
+      $('#machine-category').text(machine.category);
+      $('#machine-desc').text(machine.description);
+      $('#machine-brand').text(machine.brand);
+      $('#machine-price').html(`<span class="currency">OMR </span>${machine.price.toFixed(2)}`);
+
+      const statusClass = machine.status === 'Available' ? 'gf-badge-success' : machine.status === 'Low Stock' ? 'gf-badge-warning' : 'gf-badge-danger';
+      $('#machine-status').text(machine.status).addClass(statusClass);
+
+      const stars = '★'.repeat(Math.floor(machine.rating)) + (machine.rating % 1 >= 0.5 ? '½' : '');
+      $('#machine-rating').text(stars + ' ' + machine.rating);
+      $('#machine-reviews').text(`(${machine.reviews} reviews)`);
+
+      /* Specs */
+      let specsHtml = '';
+      Object.entries(machine.specs).forEach(([k, v]) => {
+        const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+        specsHtml += `<div class="spec-row"><span class="spec-label">${label}</span><span class="spec-value">${v}</span></div>`;
+      });
+      $('#machine-specs').html(specsHtml);
+
+      /* Related */
+      const related = GF_DATA.machines.filter(m => m.category === machine.category && m.id !== machine.id).slice(0, 3);
+      related.forEach(m => {
+        $('#related-machines').append(`
+          <div class="col-sm-6 col-md-4">
+            <a href="machine-detail.html?id=${m.id}" class="gf-card d-block text-decoration-none">
+              <div style="text-align:center;padding:1.5rem 0;overflow:hidden;height:180px;">
+                ${m.image ? `<img src="../${m.image}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="font-size:2.5rem;display:flex;align-items:center;justify-content:center;height:100%;"><i class="fa-solid ${m.icon}"></i></div>`}
+              </div>
+              <div class="gf-card-body pt-0">
+                <div style="font-family:var(--font-condensed);font-weight:700;font-size:0.95rem;">${m.name}</div>
+                <div style="color:var(--primary);font-family:var(--font-condensed);font-size:0.85rem;">OMR ${m.price.toFixed(2)}</div>
+              </div>
+            </a>
+          </div>`);
+      });
+
+      /* CTA Buttons */
+      $('#btn-book-service').on('click', function () {
+        if (!GF.getUser()) { window.location.href = 'login.html'; return; }
+        window.location.href = 'services.html?machine=' + encodeURIComponent(machine.name);
+      });
+      $('#btn-repair').on('click', function () {
+        if (!GF.getUser()) { window.location.href = 'login.html'; return; }
+        window.location.href = 'repair.html?machine=' + encodeURIComponent(machine.name);
+      });
+    });
+  </script>
+</body>
+</html>

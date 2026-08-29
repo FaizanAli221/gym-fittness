@@ -1,0 +1,19 @@
+{
+  "name": "gymforge-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the GymForge Full Stack Gym Management Platform built with Node.js, Express.js, and MySQL.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mysql",
+    "gym-management",
+    "rest-api",
+    "full-stack"
+  ],
+  "author": "Uzair Khan",
+  "license": "MIT"
+}

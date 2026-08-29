@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Repair Request — GymForge</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <div id="gf-navbar"></div>
+
+  <div class="dashboard-layout" id="layout-root">
+
+    <aside class="sidebar" id="gf-sidebar" style="display:none;"></aside>
+
+    <main class="dashboard-content" id="main-area">
+
+      <h2 class="fw-display mb-1">REPAIR / <span class="text-primary-gf">MAINTENANCE</span></h2>
+      <p class="text-muted-gf fw-condensed mb-4" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;">Submit a repair or maintenance request for your equipment</p>
+
+      <div class="row g-4">
+
+        <!-- Form -->
+        <div class="col-lg-7">
+          <div class="gf-card">
+            <div class="gf-card-body">
+
+              <div class="gf-alert gf-alert-success" id="req-success"></div>
+              <div class="gf-alert gf-alert-danger" id="req-error"></div>
+
+              <form id="repair-form" novalidate>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="machine-name">Machine / Equipment Name *</label>
+                      <input type="text" id="machine-name" class="gf-input" placeholder="e.g. Treadmill T900"/>
+                      <div class="gf-error" id="machine-err">Machine name is required.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="machine-brand">Brand (optional)</label>
+                      <input type="text" id="machine-brand" class="gf-input" placeholder="e.g. PowerMax"/>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="req-type">Request Type *</label>
+                      <select id="req-type" class="gf-input">
+                        <option value="">— Select Type —</option>
+                        <option>Repair</option>
+                        <option>Preventive Maintenance</option>
+                        <option>Inspection</option>
+                        <option>Part Replacement</option>
+                        <option>Software / Display Issue</option>
+                        <option>Other</option>
+                      </select>
+                      <div class="gf-error" id="type-err">Please select a request type.</div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="urgency">Urgency Level *</label>
+                      <select id="urgency" class="gf-input">
+                        <option value="">— Select Urgency —</option>
+                        <option value="Low">Low — Schedule at convenience</option>
+                        <option value="Medium">Medium — Within a week</option>
+                        <option value="High">High — Within 48 hours</option>
+                        <option value="Critical">Critical — Machine is down</option>
+                      </select>
+                      <div class="gf-error" id="urgency-err">Please select urgency level.</div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="issue-desc">Issue Description *</label>
+                      <textarea id="issue-desc" class="gf-input" placeholder="Describe the problem in detail — what symptoms did you notice? When did it start? What happened before the issue appeared?" style="min-height:120px;"></textarea>
+                      <div class="gf-error" id="desc-err">Please describe the issue (at least 20 characters).</div>
+                      <div style="text-align:right;font-size:0.78rem;color:var(--text-muted);margin-top:4px;font-family:var(--font-condensed);">
+                        <span id="char-count">0</span> / 500
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="preferred-date">Preferred Service Date *</label>
+                      <input type="date" id="preferred-date" class="gf-input"/>
+                      <div class="gf-error" id="date-err">Please select a preferred date.</div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="contact-phone">Contact Phone *</label>
+                      <input type="tel" id="contact-phone" class="gf-input" placeholder="+968 9999 0000"/>
+                      <div class="gf-error" id="phone-err">Enter a valid phone number.</div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="gf-form-group mb-0">
+                      <label class="gf-label" for="gym-address">Gym / Facility Address *</label>
+                      <input type="text" id="gym-address" class="gf-input" placeholder="e.g. Building 12, Al-Khoud, Muscat"/>
+                      <div class="gf-error" id="addr-err">Address is required.</div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-size:0.87rem;color:var(--text-muted);">
+                      <input type="checkbox" id="agree-access" style="accent-color:var(--primary);"/>
+                      I confirm that our technician will have safe access to the equipment on the requested date.
+                    </label>
+                    <div class="gf-error" id="access-err">Please confirm access for the technician.</div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-primary-gf w-100 mt-4" id="req-btn">SUBMIT REQUEST</button>
+
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side Info + My Requests -->
+        <div class="col-lg-5">
+          <!-- Info Box -->
+          <div class="gf-card mb-4">
+            <div class="gf-card-body">
+              <h5 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.82rem;color:var(--text-muted);">How It Works</h5>
+              <div style="display:flex;flex-direction:column;gap:1rem;">
+                <div style="display:flex;gap:0.75rem;">
+                  <div style="min-width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.85rem;">1</div>
+                  <div><div class="fw-condensed" style="font-size:0.9rem;">Submit Your Request</div><div style="font-size:0.82rem;color:var(--text-muted);">Fill in the form with machine details and the issue.</div></div>
+                </div>
+                <div style="display:flex;gap:0.75rem;">
+                  <div style="min-width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.85rem;">2</div>
+                  <div><div class="fw-condensed" style="font-size:0.9rem;">We Confirm</div><div style="font-size:0.82rem;color:var(--text-muted);">Our team will review and confirm within 24 hours.</div></div>
+                </div>
+                <div style="display:flex;gap:0.75rem;">
+                  <div style="min-width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.85rem;">3</div>
+                  <div><div class="fw-condensed" style="font-size:0.9rem;">Technician Visits</div><div style="font-size:0.82rem;color:var(--text-muted);">A certified technician visits on your preferred date.</div></div>
+                </div>
+                <div style="display:flex;gap:0.75rem;">
+                  <div style="min-width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.85rem;">4</div>
+                  <div><div class="fw-condensed" style="font-size:0.9rem;">Issue Resolved</div><div style="font-size:0.82rem;color:var(--text-muted);">Machine repaired and tested before we leave.</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- My Requests -->
+          <div class="gf-card">
+            <div class="gf-card-body">
+              <h5 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.82rem;color:var(--text-muted);">My Requests</h5>
+              <div id="my-requests-list">
+                <p class="text-muted-gf fw-condensed" style="font-size:0.85rem;">No requests submitted yet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div id="gf-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    $(document).ready(async function () {
+      const user = await GF.loadUser();
+      GF.renderNavbar('repair');
+      GF.renderFooter();
+
+      if (user) {
+        $('#gf-sidebar').show();
+        GF_renderSidebar('repair');
+      } else {
+        $('#layout-root').css('grid-template-columns', '1fr');
+        $('#gf-sidebar').remove();
+      }
+
+      /* Min date */
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      $('#preferred-date').attr('min', tomorrow.toISOString().split('T')[0]);
+
+      /* Char counter */
+      $('#issue-desc').on('input', function () {
+        const len = $(this).val().length;
+        $('#char-count').text(len);
+        if (len > 500) $(this).val($(this).val().substring(0, 500));
+      });
+
+      /* Load user requests */
+      async function loadRequests() {
+        if (!user) return;
+        const rRes = await API.getRepairs();
+        const requests = rRes.success ? rRes.requests : [];
+        if (requests.length === 0) {
+          $('#requests-list').html('<p class="text-muted-gf fw-condensed" style="font-size:0.85rem;">No repair requests yet.</p>');
+          return;
+        }
+        let html = '';
+        requests.forEach(r => {
+          const cls = r.status === 'Pending' ? 'gf-badge-warning' : r.status === 'In Progress' ? 'gf-badge-primary' : 'gf-badge-success';
+          const urg = r.urgency === 'Critical' ? 'gf-badge-danger' : r.urgency === 'High' ? 'gf-badge-warning' : 'gf-badge-muted';
+          html += `<div class="gf-card mb-3">
+            <div class="gf-card-body">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                  <div style="font-family:var(--font-condensed);font-weight:700;font-size:1rem;">${r.machine_name}</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted);">${r.request_type} • ${GF.formatDate(r.created_at)}</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <span class="gf-badge ${urg}">${r.urgency || 'Normal'}</span>
+                  <span class="gf-badge ${cls}">${r.status}</span>
+                </div>
+              </div>
+              <p style="font-size:0.83rem;color:var(--text-muted);margin-top:0.5rem;margin-bottom:0;">${(r.description || '').substring(0,100)}…</p>
+            </div>
+          </div>`;
+        });
+        $('#requests-list').html(html);
+      }
+      await loadRequests();
+
+      /* Form submit */
+      $('#repair-form').on('submit', async function (e) {
+        e.preventDefault();
+        GF.clearAll(this);
+        $('#req-error, #req-success').removeClass('show');
+
+        if (!user) { window.location.href = '/pages/login.html'; return; }
+
+        const machineName = $('#machine-name').val();
+        const reqType     = $('#req-type').val();
+        const urgency     = $('#urgency').val();
+        const issueDesc   = $('#issue-desc').val();
+        const date        = $('#preferred-date').val();
+        const phone       = $('#contact-phone').val();
+        const address     = $('#gym-address').val();
+        const agreed      = $('#agree-access').is(':checked');
+        let valid = true;
+
+        if (!GF.validate.required(machineName))  { GF.showError(document.getElementById('machine-name'),   'Machine name is required.');                   valid=false; }
+        if (!reqType)                             { GF.showError(document.getElementById('req-type'),       'Please select a request type.');               valid=false; }
+        if (!urgency)                             { GF.showError(document.getElementById('urgency'),        'Please select urgency level.');                valid=false; }
+        if (!GF.validate.minLen(issueDesc, 20))  { GF.showError(document.getElementById('issue-desc'),     'Please describe the issue (min 20 chars).');   valid=false; }
+        if (!date)                               { GF.showError(document.getElementById('preferred-date'), 'Please select a preferred date.');             valid=false; }
+        if (!GF.validate.phone(phone))           { GF.showError(document.getElementById('contact-phone'),  'Enter a valid phone number.');                 valid=false; }
+        if (!GF.validate.required(address))      { GF.showError(document.getElementById('gym-address'),    'Address is required.');                        valid=false; }
+        if (!agreed) { document.getElementById('access-err').classList.add('show'); valid=false; }
+
+        if (!valid) { $('#req-error').text('Please fix the errors above.').addClass('show'); return; }
+
+        const btn = document.getElementById('req-btn');
+        btn.innerHTML = '<span class="gf-spinner"></span> SUBMITTING…';
+        btn.disabled = true;
+
+        const res = await API.createRepair({
+          machineName,
+          machineBrand:  $('#machine-brand').val(),
+          requestType:   reqType,
+          urgency,
+          description:   issueDesc,
+          preferredDate: date,
+        });
+
+        btn.innerHTML = 'SUBMIT REQUEST'; btn.disabled = false;
+
+        if (res.success) {
+          $('#req-success').html(`<i class="fa-solid fa-check"></i> Request submitted! Reference: ${res.requestId}`).addClass('show');
+          GF.toast('Repair request submitted!', 'success');
+          $('#repair-form')[0].reset();
+          await loadRequests();
+        } else {
+          $('#req-error').text(res.message || 'Submission failed.').addClass('show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

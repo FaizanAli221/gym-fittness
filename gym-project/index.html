@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GymForge — Equipment & Services</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div id="gf-navbar"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container position-relative" style="z-index:1;">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <span class="section-label">Professional Gym Solutions</span>
+          <h1 class="hero-title">
+            BUILD YOUR<br><span class="accent">GYM</span><br>STRONGER.
+          </h1>
+          <p class="hero-sub">
+            Premium gym machines, expert installation, and reliable maintenance services — everything you need to launch or upgrade your fitness facility.
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="pages/machines.html" class="btn-primary-gf">Browse Machines</a>
+            <a href="pages/services.html" class="btn-outline-gf">Our Services</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual"><i class="fa-solid fa-dumbbell"></i></div>
+  </section>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <div class="stat-item">
+            <div class="stat-number" id="cnt-machines">0</div>
+            <div class="stat-label">Machines</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-item">
+            <div class="stat-number" id="cnt-brands">0</div>
+            <div class="stat-label">Brands</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-item">
+            <div class="stat-number" id="cnt-services">0</div>
+            <div class="stat-label">Services</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Support</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Machines -->
+  <section class="page-wrapper">
+    <div class="container">
+      <span class="section-label">Top Picks</span>
+      <h2 class="section-title">FEATURED <span class="text-primary-gf">MACHINES</span></h2>
+      <p class="text-muted-gf mb-4" style="max-width:500px;">Commercial-grade equipment trusted by gyms, hotels, and training facilities across the region.</p>
+
+      <div class="row g-4" id="featured-machines">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="text-center mt-5">
+        <a href="pages/machines.html" class="btn-outline-gf">View All Machines →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Overview -->
+  <section style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:4rem 0;">
+    <div class="container">
+      <span class="section-label">What We Do</span>
+      <h2 class="section-title">OUR <span class="text-primary-gf">SERVICES</span></h2>
+      <p class="text-muted-gf mb-4" style="max-width:500px;">From installation to annual maintenance, our certified technicians keep your gym running at peak performance.</p>
+
+      <div class="row g-3" id="services-preview">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="text-center mt-5">
+        <a href="pages/services.html" class="btn-primary-gf">Book a Service</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding:5rem 0;">
+    <div class="container text-center">
+      <span class="section-label">Get Started</span>
+      <h2 class="section-title" style="max-width:600px; margin:0 auto 1.5rem;">
+        READY TO <span class="text-primary-gf">BUILD</span> YOUR GYM?
+      </h2>
+      <p class="text-muted-gf mb-4">Create a free account to browse machines, book services, and manage your equipment — all in one place.</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="pages/register.html" class="btn-primary-gf">Create Free Account</a>
+        <a href="pages/login.html" class="btn-outline-gf">Sign In</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="gf-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    $(document).ready(async function () {
+      await GF.loadUser();
+      GF.renderNavbar('home');
+      GF.renderFooter();
+
+      /* ---- Animated counters ---- */
+      function animateCounter(id, target) {
+        let current = 0;
+        const step = Math.ceil(target / 40);
+        const timer = setInterval(() => {
+          current = Math.min(current + step, target);
+          $('#' + id).text(current + '+');
+          if (current >= target) clearInterval(timer);
+        }, 40);
+      }
+      let _machines = GF_DATA.machines;
+      let _services = GF_DATA.services;
+      try {
+        const mR = await API.getMachines();
+        if (mR.success && mR.machines && mR.machines.length > 0) _machines = mR.machines;
+        const sR = await API.getServices();
+        if (sR.success && sR.services && sR.services.length > 0) _services = sR.services;
+      } catch(e) {}
+      animateCounter('cnt-machines', _machines.length);
+      animateCounter('cnt-brands', [...new Set(_machines.map(m => m.brand))].length);
+      animateCounter('cnt-services', _services.length);
+
+      /* ---- Featured Machines (first 3) ---- */
+      const featured = _machines.slice(0, 3);
+      const $grid = $('#featured-machines');
+      featured.forEach(m => {
+        const statusClass = m.status === 'Available' ? 'gf-badge-success' : m.status === 'Low Stock' ? 'gf-badge-warning' : 'gf-badge-danger';
+        $grid.append(`
+          <div class="col-md-4">
+            <div class="gf-card h-100">
+              <div class="gf-card-img-placeholder" style="overflow:hidden;">
+                ${m.image ? `<img src="${m.image}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="font-size:3rem;display:flex;align-items:center;justify-content:center;height:100%;"><i class="fa-solid ${m.icon}"></i></div>`}
+              </div>
+              <div class="gf-card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="gf-badge gf-badge-muted">${m.category}</span>
+                  <span class="gf-badge ${statusClass}">${m.status}</span>
+                </div>
+                <h4 style="font-family:var(--font-condensed);font-weight:700;font-size:1.15rem;margin-bottom:0.5rem;">${m.name}</h4>
+                <p style="color:var(--text-muted);font-size:0.87rem;margin-bottom:1rem;">${m.description.substring(0, 90)}…</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="price-tag" style="font-size:1.5rem;"><span class="currency">OMR </span>${m.price.toFixed(2)}</span>
+                  <a href="pages/machine-detail.html?id=${m.id}" class="btn-primary-gf" style="font-size:0.85rem;padding:0.5rem 1rem;">Details</a>
+                </div>
+              </div>
+            </div>
+          </div>`);
+      });
+
+      /* ---- Services Preview (first 3) ---- */
+      const $sv = $('#services-preview');
+      _services.slice(0, 3).forEach(s => {
+        $sv.append(`
+          <div class="col-md-4">
+            <div class="gf-card p-0">
+              <div class="gf-card-body d-flex gap-3 align-items-start">
+                <div style="font-size:1.8rem;min-width:48px;text-align:center;color:var(--primary);"><i class="fa-solid ${s.icon}"></i></div>
+                <div>
+                  <h5 style="font-family:var(--font-condensed);font-weight:700;font-size:1.05rem;letter-spacing:0.5px;">${s.name}</h5>
+                  <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:0.5rem;">${s.description.substring(0, 80)}…</p>
+                  <span style="color:var(--primary);font-family:var(--font-condensed);font-weight:700;">From ${'OMR ' + parseFloat(s.price).toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>`);
+      });
+    });
+  </script>
+</body>
+</html>

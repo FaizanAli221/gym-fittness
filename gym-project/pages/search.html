@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Machines — GymForge</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <div id="gf-navbar"></div>
+
+  <div class="dashboard-layout" id="layout-root">
+
+    <!-- Sidebar (only when logged in) -->
+    <aside class="sidebar" id="gf-sidebar" style="display:none;"></aside>
+
+    <main class="dashboard-content" id="main-area">
+
+      <h2 class="fw-display mb-1">SEARCH <span class="text-primary-gf">MACHINES</span></h2>
+      <p class="text-muted-gf fw-condensed mb-4" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;">Find equipment by name, brand, or category</p>
+
+      <!-- Search Bar -->
+      <div class="search-bar-wrap">
+        <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" id="search-input" class="gf-input" placeholder="e.g. treadmill, IronCore, Cardio…" autocomplete="off"/>
+      </div>
+
+      <!-- Advanced Filters -->
+      <div class="gf-card mb-4">
+        <div class="gf-card-body">
+          <h6 class="fw-condensed mb-3" style="letter-spacing:2px;text-transform:uppercase;font-size:0.8rem;color:var(--text-muted);">Advanced Filters</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="gf-label">Category</label>
+              <select id="filter-cat" class="gf-input">
+                <option value="">All Categories</option>
+                <option>Cardio</option>
+                <option>Strength</option>
+                <option>Functional</option>
+                <option>Free Weights</option>
+                <option>Recovery</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="gf-label">Status</label>
+              <select id="filter-status" class="gf-input">
+                <option value="">Any Status</option>
+                <option>Available</option>
+                <option>Low Stock</option>
+                <option>Out of Stock</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="gf-label">Max Price (OMR)</label>
+              <input type="number" id="filter-price" class="gf-input" placeholder="e.g. 1000" min="0"/>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn-primary-gf" id="apply-filters" style="font-size:0.85rem;padding:0.5rem 1.2rem;">Apply Filters</button>
+            <button class="btn-outline-gf" id="clear-filters" style="font-size:0.85rem;padding:0.5rem 1.2rem;">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results info -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="fw-condensed text-muted-gf" style="font-size:0.85rem;letter-spacing:1px;" id="result-info"></div>
+      </div>
+
+      <!-- Results Grid -->
+      <div class="row g-3" id="search-results"></div>
+
+      <!-- Empty state -->
+      <div id="no-results" style="display:none;text-align:center;padding:3rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;"><i class="fa-solid fa-face-frown" style="color:var(--text-muted);"></i></div>
+        <h4 class="fw-condensed" style="letter-spacing:1px;color:var(--text-muted);">NO RESULTS FOUND</h4>
+        <p class="text-muted-gf">Try different keywords or adjust your filters.</p>
+      </div>
+
+      <!-- Default state (before search) -->
+      <div id="default-state" style="text-align:center;padding:3rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;"><i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted);"></i></div>
+        <h4 class="fw-condensed" style="letter-spacing:1px;color:var(--text-muted);">START SEARCHING</h4>
+        <p class="text-muted-gf">Type a machine name, brand, or category above.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="gf-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    $(document).ready(async function () {
+      const mRes = await API.getMachines();
+      const machinesList = mRes.success ? mRes.machines : [];
+      await GF.loadUser();
+      GF.renderNavbar('search');
+      GF.renderFooter();
+
+      /* Show sidebar if logged in */
+      if (GF.getUser()) {
+        $('#gf-sidebar').show();
+        GF_renderSidebar('search');
+      } else {
+        $('#layout-root').css('grid-template-columns', '1fr');
+        $('#gf-sidebar').remove();
+      }
+
+      function doSearch() {
+        const query  = $('#search-input').val().trim().toLowerCase();
+        const cat    = $('#filter-cat').val();
+        const status = $('#filter-status').val();
+        const maxPx  = parseFloat($('#filter-price').val()) || Infinity;
+
+        if (!query && !cat && !status && maxPx === Infinity) {
+          $('#default-state').show();
+          $('#no-results').hide();
+          $('#search-results').empty();
+          $('#result-info').text('');
+          return;
+        }
+
+        $('#default-state').hide();
+        let results = machinesList.filter(m => {
+          const matchQuery = !query ||
+            m.name.toLowerCase().includes(query) ||
+            m.brand.toLowerCase().includes(query) ||
+            m.category.toLowerCase().includes(query) ||
+            m.description.toLowerCase().includes(query);
+          const matchCat    = !cat    || m.category === cat;
+          const matchStatus = !status || m.status === status;
+          const matchPrice  = m.price <= maxPx;
+          return matchQuery && matchCat && matchStatus && matchPrice;
+        });
+
+        const $results = $('#search-results').empty();
+        $('#no-results').hide();
+
+        if (results.length === 0) {
+          $('#no-results').show();
+          $('#result-info').text('');
+          return;
+        }
+
+        $('#result-info').text(`Found ${results.length} machine${results.length !== 1 ? 's' : ''}`);
+
+        results.forEach(m => {
+          const statusCls = m.status === 'Available' ? 'gf-badge-success' : m.status === 'Low Stock' ? 'gf-badge-warning' : 'gf-badge-danger';
+          /* Highlight matching keyword */
+          let nameHtml = m.name;
+          if (query) {
+            const re = new RegExp(`(${query})`, 'gi');
+            nameHtml = m.name.replace(re, '<mark style="background:rgba(232,255,0,0.3);color:inherit;border-radius:2px;padding:0 2px;">$1</mark>');
+          }
+          $results.append(`
+            <div class="col-sm-6 col-xl-4">
+              <div class="gf-card h-100">
+                <div style="text-align:center;padding:1.5rem 0;background:var(--surface-2);overflow:hidden;height:220px;">
+                  ${m.image ? `<img src="../${m.image}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="font-size:3rem;display:flex;align-items:center;justify-content:center;height:100%;"><i class="fa-solid ${m.icon}"></i></div>`}
+                </div>
+                <div class="gf-card-body d-flex flex-column">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="gf-badge gf-badge-muted" style="font-size:0.72rem;">${m.category}</span>
+                    <span class="gf-badge ${statusCls}" style="font-size:0.72rem;">${m.status}</span>
+                  </div>
+                  <h5 style="font-family:var(--font-condensed);font-weight:700;font-size:0.97rem;margin:0.4rem 0;">${nameHtml}</h5>
+                  <p style="font-size:0.83rem;color:var(--text-muted);flex:1;">${m.description.substring(0, 80)}…</p>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span style="font-family:var(--font-display);font-size:1.3rem;color:var(--primary);">OMR ${m.price.toFixed(2)}</span>
+                    <a href="machine-detail.html?id=${m.id}" class="btn-primary-gf" style="font-size:0.78rem;padding:0.4rem 0.9rem;">Details</a>
+                  </div>
+                </div>
+              </div>
+            </div>`);
+        });
+      }
+
+      /* Live search with debounce */
+      let debounceTimer;
+      $('#search-input').on('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(doSearch, 280);
+      });
+
+      $('#apply-filters').on('click', doSearch);
+      $('#clear-filters').on('click', function () {
+        $('#search-input').val('');
+        $('#filter-cat, #filter-status, #filter-price').val('');
+        $('#search-results').empty();
+        $('#no-results').hide();
+        $('#default-state').show();
+        $('#result-info').text('');
+      });
+
+      /* Pre-fill from URL query */
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (q) { $('#search-input').val(q); doSearch(); }
+    });
+  </script>
+</body>
+</html>
