@@ -205,13 +205,20 @@
         if (len > 500) $(this).val($(this).val().substring(0, 500));
       });
 
+      /* Pre-fill machine from URL parameter */
+      const urlParams = new URLSearchParams(window.location.search);
+      const prefillMachine = urlParams.get('machine');
+      if (prefillMachine) {
+        $('#machine-name').val(prefillMachine);
+      }
+
       /* Load user requests */
       async function loadRequests() {
         if (!user) return;
         const rRes = await API.getRepairs();
         const requests = rRes.success ? rRes.requests : [];
         if (requests.length === 0) {
-          $('#requests-list').html('<p class="text-muted-gf fw-condensed" style="font-size:0.85rem;">No repair requests yet.</p>');
+          $('#my-requests-list').html('<p class="text-muted-gf fw-condensed" style="font-size:0.85rem;">No repair requests yet.</p>');
           return;
         }
         let html = '';
@@ -234,7 +241,7 @@
             </div>
           </div>`;
         });
-        $('#requests-list').html(html);
+        $('#my-requests-list').html(html);
       }
       await loadRequests();
 

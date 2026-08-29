@@ -130,14 +130,15 @@
 
         $('#default-state').hide();
         let results = machinesList.filter(m => {
+          const mPrice = parseFloat(m.price) || 0;
           const matchQuery = !query ||
             m.name.toLowerCase().includes(query) ||
             m.brand.toLowerCase().includes(query) ||
             m.category.toLowerCase().includes(query) ||
-            m.description.toLowerCase().includes(query);
+            (m.description && m.description.toLowerCase().includes(query));
           const matchCat    = !cat    || m.category === cat;
           const matchStatus = !status || m.status === status;
-          const matchPrice  = m.price <= maxPx;
+          const matchPrice  = mPrice <= maxPx;
           return matchQuery && matchCat && matchStatus && matchPrice;
         });
 
@@ -154,10 +155,12 @@
 
         results.forEach(m => {
           const statusCls = m.status === 'Available' ? 'gf-badge-success' : m.status === 'Low Stock' ? 'gf-badge-warning' : 'gf-badge-danger';
-          /* Highlight matching keyword */
+          const priceNum = parseFloat(m.price) || 0;
+          /* Highlight matching keyword safely */
           let nameHtml = m.name;
           if (query) {
-            const re = new RegExp(`(${query})`, 'gi');
+            const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp(`(${escaped})`, 'gi');
             nameHtml = m.name.replace(re, '<mark style="background:rgba(232,255,0,0.3);color:inherit;border-radius:2px;padding:0 2px;">$1</mark>');
           }
           $results.append(`
@@ -172,9 +175,9 @@
                     <span class="gf-badge ${statusCls}" style="font-size:0.72rem;">${m.status}</span>
                   </div>
                   <h5 style="font-family:var(--font-condensed);font-weight:700;font-size:0.97rem;margin:0.4rem 0;">${nameHtml}</h5>
-                  <p style="font-size:0.83rem;color:var(--text-muted);flex:1;">${m.description.substring(0, 80)}…</p>
+                  <p style="font-size:0.83rem;color:var(--text-muted);flex:1;">${(m.description || '').substring(0, 80)}…</p>
                   <div class="d-flex justify-content-between align-items-center mt-2">
-                    <span style="font-family:var(--font-display);font-size:1.3rem;color:var(--primary);">OMR ${m.price.toFixed(2)}</span>
+                    <span style="font-family:var(--font-display);font-size:1.3rem;color:var(--primary);">OMR ${priceNum.toFixed(2)}</span>
                     <a href="machine-detail.html?id=${m.id}" class="btn-primary-gf" style="font-size:0.78rem;padding:0.4rem 0.9rem;">Details</a>
                   </div>
                 </div>

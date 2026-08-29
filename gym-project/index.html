@@ -171,7 +171,7 @@
                 <h4 style="font-family:var(--font-condensed);font-weight:700;font-size:1.15rem;margin-bottom:0.5rem;">${m.name}</h4>
                 <p style="color:var(--text-muted);font-size:0.87rem;margin-bottom:1rem;">${m.description.substring(0, 90)}…</p>
                 <div class="d-flex justify-content-between align-items-center">
-                  <span class="price-tag" style="font-size:1.5rem;"><span class="currency">OMR </span>${m.price.toFixed(2)}</span>
+                  <span class="price-tag" style="font-size:1.5rem;"><span class="currency">OMR </span>${Number(m.price).toFixed(2)}</span>
                   <a href="pages/machine-detail.html?id=${m.id}" class="btn-primary-gf" style="font-size:0.85rem;padding:0.5rem 1rem;">Details</a>
                 </div>
               </div>

@@ -1,0 +1,33 @@
+﻿{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/css/(.*)",
+      "destination": "/gym-project/css/$1"
+    },
+    {
+      "source": "/js/(.*)",
+      "destination": "/gym-project/js/$1"
+    },
+    {
+      "source": "/images/(.*)",
+      "destination": "/gym-project/images/$1"
+    },
+    {
+      "source": "/pages/(.*)",
+      "destination": "/gym-project/pages/$1"
+    },
+    {
+      "source": "/",
+      "destination": "/gym-project/index.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/gym-project/index.html"
+    }
+  ]
+}

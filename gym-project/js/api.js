@@ -1,28 +1,40 @@
-/* =============================================
+﻿/* =============================================
    GymForge - API Helper (api.js)
    All backend fetch calls go through here.
-   Base URL points to Express server.
+   Base URL automatically adapts to environment.
    ============================================= */
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = (window.location.port === '5500' || window.location.port === '5501')
+  ? 'http://localhost:3000/api'
+  : '/api';
 
 const API = {
 
   /* ---- Generic fetch wrapper ---- */
   async request(method, endpoint, body = null) {
-    const opts = {
-      method,
-      credentials: 'include',          // send session cookie with every request
-      headers: { 'Content-Type': 'application/json' },
-    };
-    if (body) opts.body = JSON.stringify(body);
-    const res = await fetch(API_BASE + endpoint, opts);
-    const data = await res.json();
-    return { ok: res.ok, status: res.status, ...data };
+    try {
+      const opts = {
+        method,
+        credentials: 'include',          // send session cookie with every request
+        headers: { 'Content-Type': 'application/json' },
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(API_BASE + endpoint, opts);
+      const contentType = res.headers.get('content-type') || '';
+      let data = {};
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      }
+      return { ok: res.ok, status: res.status, ...data };
+    } catch (err) {
+      console.warn('API request failed:', err);
+      return { ok: false, success: false, message: 'Network or API connection error' };
+    }
   },
 
   get(endpoint)         { return API.request('GET',    endpoint); },
   post(endpoint, body)  { return API.request('POST',   endpoint, body); },
+  put(endpoint, body)   { return API.request('PUT',    endpoint, body); },
   del(endpoint)         { return API.request('DELETE', endpoint); },
 
   /* ---- Auth ---- */
@@ -47,4 +59,7 @@ const API = {
   /* ---- Repairs ---- */
   getRepairs()        { return API.get('/repairs'); },
   createRepair(r)     { return API.post('/repairs', r); },
+
+  /* ---- Profile ---- */
+  updateProfile(p)    { return API.put('/profile', p); },
 };

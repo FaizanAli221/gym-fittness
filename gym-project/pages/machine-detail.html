@@ -112,9 +112,24 @@
 
       const params = new URLSearchParams(window.location.search);
       const id = parseInt(params.get('id'));
-      const machine = GF_DATA.machines.find(m => m.id === id);
+      let machine = null;
+
+      try {
+        const mRes = await API.getMachine(id);
+        if (mRes.success && mRes.machine) {
+          machine = mRes.machine;
+        }
+      } catch(e) {}
+
+      if (!machine) {
+        machine = GF_DATA.machines.find(m => m.id === id);
+      }
 
       if (!machine) { $('#not-found').show(); return; }
+
+      const priceVal = parseFloat(machine.price) || 0;
+      const ratingVal = parseFloat(machine.rating) || 0;
+      const reviewsVal = parseInt(machine.reviews) || 0;
 
       $('#machine-content').show();
       document.title = machine.name + ' — GymForge';
@@ -129,18 +144,24 @@
       $('#machine-category').text(machine.category);
       $('#machine-desc').text(machine.description);
       $('#machine-brand').text(machine.brand);
-      $('#machine-price').html(`<span class="currency">OMR </span>${machine.price.toFixed(2)}`);
+      $('#machine-price').html(`<span class="currency">OMR </span>${priceVal.toFixed(2)}`);
 
       const statusClass = machine.status === 'Available' ? 'gf-badge-success' : machine.status === 'Low Stock' ? 'gf-badge-warning' : 'gf-badge-danger';
       $('#machine-status').text(machine.status).addClass(statusClass);
 
-      const stars = '★'.repeat(Math.floor(machine.rating)) + (machine.rating % 1 >= 0.5 ? '½' : '');
-      $('#machine-rating').text(stars + ' ' + machine.rating);
-      $('#machine-reviews').text(`(${machine.reviews} reviews)`);
+      const stars = '★'.repeat(Math.floor(ratingVal)) + (ratingVal % 1 >= 0.5 ? '½' : '');
+      $('#machine-rating').text(stars + ' ' + ratingVal);
+      $('#machine-reviews').text(`(${reviewsVal} reviews)`);
 
       /* Specs */
+      let specsObj = machine.specs;
+      if (typeof specsObj === 'string') {
+        try { specsObj = JSON.parse(specsObj); } catch(e) { specsObj = {}; }
+      }
+      specsObj = specsObj || {};
+
       let specsHtml = '';
-      Object.entries(machine.specs).forEach(([k, v]) => {
+      Object.entries(specsObj).forEach(([k, v]) => {
         const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
         specsHtml += `<div class="spec-row"><span class="spec-label">${label}</span><span class="spec-value">${v}</span></div>`;
       });
@@ -149,6 +170,7 @@
       /* Related */
       const related = GF_DATA.machines.filter(m => m.category === machine.category && m.id !== machine.id).slice(0, 3);
       related.forEach(m => {
+        const relPrice = parseFloat(m.price) || 0;
         $('#related-machines').append(`
           <div class="col-sm-6 col-md-4">
             <a href="machine-detail.html?id=${m.id}" class="gf-card d-block text-decoration-none">
@@ -157,7 +179,7 @@
               </div>
               <div class="gf-card-body pt-0">
                 <div style="font-family:var(--font-condensed);font-weight:700;font-size:0.95rem;">${m.name}</div>
-                <div style="color:var(--primary);font-family:var(--font-condensed);font-size:0.85rem;">OMR ${m.price.toFixed(2)}</div>
+                <div style="color:var(--primary);font-family:var(--font-condensed);font-size:0.85rem;">OMR ${relPrice.toFixed(2)}</div>
               </div>
             </a>
           </div>`);

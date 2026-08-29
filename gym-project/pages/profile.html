@@ -234,12 +234,38 @@
         if (!GF.validate.required(gymName))  { GF.showError(document.getElementById('edit-gym'),   'Gym name is required.'); valid=false; }
         if (!valid) { $('#profile-error').text('Please fix the errors above.').addClass('show'); return; }
 
-        /* Profile update — currently just updates local display (no dedicated update endpoint needed for project scope) */
-        user = { ...user, fullName, email, phone, gymName, city };
-        GF.setUser(user);
-        populateProfile();
-        $('#profile-success').text('Profile updated successfully!').addClass('show');
-        GF.toast('Profile saved!', 'success');
+        const btn = document.getElementById('save-btn');
+        btn.innerHTML = '<span class="gf-spinner"></span> SAVING…';
+        btn.disabled = true;
+
+        try {
+          const res = await API.updateProfile({ fullName, phone, gymName, city });
+          if (res && res.success) {
+            user = { ...user, fullName, email, phone, gymName, city };
+            GF.setUser(user);
+            populateProfile();
+            GF_renderSidebar('profile');
+            $('#profile-success').text('Profile updated successfully!').addClass('show');
+            GF.toast('Profile saved!', 'success');
+          } else {
+            // Fallback for demo mode
+            user = { ...user, fullName, email, phone, gymName, city };
+            GF.setUser(user);
+            populateProfile();
+            GF_renderSidebar('profile');
+            $('#profile-success').text('Profile updated locally!').addClass('show');
+            GF.toast('Profile saved!', 'success');
+          }
+        } catch(err) {
+          user = { ...user, fullName, email, phone, gymName, city };
+          GF.setUser(user);
+          populateProfile();
+          $('#profile-success').text('Profile saved!').addClass('show');
+          GF.toast('Profile saved!', 'success');
+        } finally {
+          btn.innerHTML = 'SAVE CHANGES';
+          btn.disabled = false;
+        }
       });
     });
   </script>

@@ -1,6 +1,5 @@
-// server.js
+﻿// server.js
 // GymForge – Express Back-End Entry Point
-// CIS2213 Final Project – Semester 202520
 
 require('dotenv').config();
 
@@ -31,29 +30,24 @@ app.use(express.urlencoded({ extended: true }));
 // Parse cookies from incoming requests
 app.use(cookieParser());
 
-// CORS – allow front-end running on a different port to call this API
+// CORS – support cross-origin requests
 app.use(cors({
-  origin:      'http://localhost:5500',  // Live Server default; adjust if needed
-  credentials: true,                     // required to send session cookies cross-origin
+  origin: (origin, callback) => callback(null, true),
+  credentials: true,
 }));
 
-// Session middleware – stores session data server-side
+// Session middleware
 app.use(session({
-  secret:            process.env.SESSION_SECRET || 'gymforge_secret',
+  secret:            process.env.SESSION_SECRET || 'gymforge_secret_key_2025',
   resave:            false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true,    // not accessible via JavaScript (security)
-    secure:   false,   // set to true when using HTTPS
-    maxAge:   24 * 60 * 60 * 1000,   // default session: 24 hours
+    httpOnly: true,
+    secure:   false,
+    maxAge:   24 * 60 * 60 * 1000,
     sameSite: 'lax',
   },
 }));
-
-// ─── Serve Static Front-End Files ─────────────────────────────
-// The gym-project folder sits one level up from this backend folder.
-// Express will serve index.html, CSS, JS and images automatically.
-app.use(express.static(path.join(__dirname, '..', 'gym-project')));
 
 // ─── API Routes ───────────────────────────────────────────────
 app.use('/api', authRoutes);           // /api/register, /api/login, /api/logout, /api/me
@@ -63,25 +57,32 @@ app.use('/api/bookings',  bookingRoutes);
 app.use('/api/repairs',   repairRoutes);
 app.use('/api/profile',   profileRoutes);
 
-// ─── Fallback – serve index.html for any unmatched GET request ─
+// ─── 404 Handler for unmatched API routes ────────────────────
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: 'API route not found.' });
+});
+
+// ─── Serve Static Front-End Files ─────────────────────────────
+app.use(express.static(path.join(__dirname, '..', 'gym-project')));
+
+// ─── Fallback – serve index.html for unmatched GET requests ───
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'gym-project', 'index.html'));
 });
 
-// ─── 404 Handler for API routes ───────────────────────────────
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found.' });
-});
-
 // ─── Global Error Handler ─────────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err.stack);
+  console.error('Unhandled error:', err.stack || err);
   res.status(500).json({ success: false, message: 'Internal server error.' });
 });
 
-// ─── Start Server ─────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`✅  GymForge server running at http://localhost:${PORT}`);
-  console.log(`📂  Serving static files from: gym-project/`);
-  console.log(`🔗  API base: http://localhost:${PORT}/api`);
-});
+// ─── Start Server (when run directly) ─────────────────────────
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅  GymForge server running at http://localhost:${PORT}`);
+    console.log(`📂  Serving static files from: gym-project/`);
+    console.log(`🔗  API base: http://localhost:${PORT}/api`);
+  });
+}
+
+module.exports = app;

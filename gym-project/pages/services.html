@@ -129,6 +129,13 @@
       tomorrow.setDate(tomorrow.getDate() + 1);
       $('#booking-date').attr('min', tomorrow.toISOString().split('T')[0]);
 
+      /* Pre-fill machine from URL parameter */
+      const urlParams = new URLSearchParams(window.location.search);
+      const prefillMachine = urlParams.get('machine');
+      if (prefillMachine) {
+        $('#machine-name').val(prefillMachine);
+      }
+
       /* Load services from API */
       let services = GF_DATA.services;
       try {
