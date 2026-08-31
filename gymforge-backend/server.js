@@ -8,6 +8,7 @@ const session       = require('express-session');
 const cookieParser  = require('cookie-parser');
 const cors          = require('cors');
 const path          = require('path');
+const fs            = require('fs');
 
 // ─── Route Handlers ───────────────────────────────────────────
 const authRoutes     = require('./routes/auth');
@@ -43,11 +44,15 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure:   false,
+    secure:   process.env.VERCEL === '1',
     maxAge:   24 * 60 * 60 * 1000,
     sameSite: 'lax',
   },
 }));
+
+app.get('/api/health', (req, res) => {
+  res.json({ success: true, message: 'GymForge API is running.' });
+});
 
 // ─── API Routes ───────────────────────────────────────────────
 app.use('/api', authRoutes);           // /api/register, /api/login, /api/logout, /api/me
@@ -63,11 +68,17 @@ app.use('/api', (req, res) => {
 });
 
 // ─── Serve Static Front-End Files ─────────────────────────────
-app.use(express.static(path.join(__dirname, '..', 'gym-project')));
+// Locally Express can serve these. On Vercel, express.static() is ignored —
+// put the same files in /public so the CDN serves them (avoids NOT_FOUND).
+const publicDir = path.join(__dirname, '..', 'public');
+const gymDir    = path.join(__dirname, '..', 'gym-project');
+const staticRoot = fs.existsSync(path.join(publicDir, 'index.html')) ? publicDir : gymDir;
+
+app.use(express.static(staticRoot));
 
 // ─── Fallback – serve index.html for unmatched GET requests ───
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'gym-project', 'index.html'));
+  res.sendFile(path.join(staticRoot, 'index.html'));
 });
 
 // ─── Global Error Handler ─────────────────────────────────────
@@ -80,7 +91,7 @@ app.use((err, req, res, next) => {
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`✅  GymForge server running at http://localhost:${PORT}`);
-    console.log(`📂  Serving static files from: gym-project/`);
+    console.log(`📂  Serving static files from: ${staticRoot}`);
     console.log(`🔗  API base: http://localhost:${PORT}/api`);
   });
 }

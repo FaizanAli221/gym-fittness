@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — GymForge</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <div id="gf-navbar"></div>
+
+  <div class="dashboard-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="gf-sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+
+      <div class="dashboard-greeting">
+        WELCOME BACK, <span id="user-greeting">USER</span>
+      </div>
+      <p class="text-muted-gf mb-4 fw-condensed" style="letter-spacing:1px;text-transform:uppercase;font-size:0.85rem;">
+        Here's a summary of your account activity
+      </p>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="dash-stats"></div>
+
+      <!-- Recent Bookings -->
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="gf-card">
+            <div class="gf-card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0 fw-condensed" style="letter-spacing:1px;text-transform:uppercase;font-size:0.9rem;color:var(--text-muted);">Recent Bookings</h5>
+                <a href="services.html" class="btn-outline-gf" style="font-size:0.78rem;padding:0.35rem 0.9rem;">+ Book Service</a>
+              </div>
+              <div id="recent-bookings-table">
+                <p class="text-muted-gf fw-condensed" style="font-size:0.85rem;">No bookings yet. <a href="services.html">Book a service →</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="gf-card">
+            <div class="gf-card-body">
+              <h5 class="mb-3 fw-condensed" style="letter-spacing:1px;text-transform:uppercase;font-size:0.9rem;color:var(--text-muted);">Repair Requests</h5>
+              <div id="recent-requests-list">
+                <p class="text-muted-gf fw-condensed" style="font-size:0.85rem;">No requests yet. <a href="repair.html">Submit one →</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <h5 class="mt-4 mb-3 fw-condensed" style="letter-spacing:2px;text-transform:uppercase;font-size:0.82rem;color:var(--text-muted);">Quick Actions</h5>
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <a href="machines.html" class="gf-card d-block text-center p-3 text-decoration-none">
+            <div style="font-size:2rem;margin-bottom:0.5rem;"><i class="fa-solid fa-dumbbell" style="color:var(--primary);"></i></div>
+            <div class="fw-condensed" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--text);">Browse Machines</div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="services.html" class="gf-card d-block text-center p-3 text-decoration-none">
+            <div style="font-size:2rem;margin-bottom:0.5rem;"><i class="fa-solid fa-calendar" style="color:var(--primary);"></i></div>
+            <div class="fw-condensed" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--text);">Book Service</div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="repair.html" class="gf-card d-block text-center p-3 text-decoration-none">
+            <div style="font-size:2rem;margin-bottom:0.5rem;"><i class="fa-solid fa-wrench" style="color:var(--primary);"></i></div>
+            <div class="fw-condensed" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--text);">Repair Request</div>
+          </a>
+        </div>
+        <div class="col-6 col-md-3">
+          <a href="profile.html" class="gf-card d-block text-center p-3 text-decoration-none">
+            <div style="font-size:2rem;margin-bottom:0.5rem;"><i class="fa-solid fa-user" style="color:var(--primary);"></i></div>
+            <div class="fw-condensed" style="font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--text);">My Profile</div>
+          </a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="gf-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    $(document).ready(async function () {
+      const user = await GF.loadUser();
+      GF.renderNavbar('dashboard');
+      GF.renderFooter();
+      if (!GF.requireLogin()) return;
+
+      $('#user-greeting').text(user.fullName.split(' ')[0].toUpperCase());
+
+      // Load bookings and repair requests from server
+      const [bRes, rRes] = await Promise.all([API.getBookings(), API.getRepairs()]);
+      const bookings = bRes.success ? bRes.bookings : [];
+      const requests = rRes.success ? rRes.requests : [];
+      const active   = bookings.filter(b => b.status === 'Confirmed').length;
+
+      /* Stats */
+      const stats = [
+        { icon: 'fa-calendar', value: bookings.length,                                         label: 'Total Bookings' },
+        { icon: 'fa-check',    value: active,                                                   label: 'Active Bookings' },
+        { icon: 'fa-wrench',   value: requests.length,                                          label: 'Repair Requests' },
+        { icon: 'fa-xmark',    value: bookings.filter(b => b.status === 'Cancelled').length,    label: 'Cancelled' },
+      ];
+      stats.forEach(s => {
+        $('#dash-stats').append(`
+          <div class="stat-card">
+            <div class="stat-card-icon"><i class="fa-solid ${s.icon}"></i></div>
+            <div class="stat-card-value">${s.value}</div>
+            <div class="stat-card-label">${s.label}</div>
+          </div>`);
+      });
+
+      /* Recent bookings table */
+      if (bookings.length > 0) {
+        let tbl = `<div style="overflow-x:auto;"><table class="gf-table">
+          <thead><tr><th>ID</th><th>Service</th><th>Date</th><th>Status</th></tr></thead><tbody>`;
+        bookings.slice(0, 5).forEach(b => {
+          const cls = b.status === 'Confirmed' ? 'gf-badge-success' : b.status === 'Cancelled' ? 'gf-badge-danger' : 'gf-badge-muted';
+          tbl += `<tr>
+            <td style="font-family:var(--font-condensed);font-size:0.78rem;color:var(--text-muted);">${b.id}</td>
+            <td>${b.service_name || '—'}</td>
+            <td style="font-size:0.85rem;">${GF.formatDate(b.booking_date)}</td>
+            <td><span class="gf-badge ${cls}">${b.status}</span></td>
+          </tr>`;
+        });
+        tbl += '</tbody></table></div>';
+        $('#recent-bookings-table').html(tbl);
+      }
+
+      /* Recent repair requests */
+      if (requests.length > 0) {
+        let list = '';
+        requests.slice(0, 4).forEach(r => {
+          const cls = r.status === 'Pending' ? 'gf-badge-warning' : r.status === 'In Progress' ? 'gf-badge-primary' : 'gf-badge-success';
+          list += `<div style="padding:0.75rem 0;border-bottom:1px solid var(--border);">
+            <div style="font-family:var(--font-condensed);font-size:0.95rem;color:var(--text);">${r.machine_name}</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);">${GF.formatDate(r.created_at)}</div>
+            <span class="gf-badge ${cls} mt-1">${r.status}</span>
+          </div>`;
+        });
+        $('#recent-requests-list').html(list);
+      }
+
+      GF_renderSidebar('dashboard');
+    });
+  </script>
+</body>
+</html>
